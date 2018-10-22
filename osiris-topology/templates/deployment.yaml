@@ -1,0 +1,40 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "osiris-topology.fullname" . }}
+  labels:
+    app: {{ template "osiris-topology.name" . }}
+    chart: {{ template "osiris-topology.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "osiris-topology.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "osiris-topology.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 6633
+              protocol: TCP
+          volumeMounts:
+            - name: config-vol
+              mountPath: /etc/ryu/osiris-sdn-app.conf
+              subPath: osiris-sdn-app.conf
+      volumes:
+        - name: config-vol
+          confiMap:
+            name: osiris-topology-{{ .Values.Instance }}-config
+            items:
+              - key: osiris-sdn-app.conf
+                path: osiris-sdn-app.conf

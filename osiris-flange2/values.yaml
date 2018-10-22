@@ -1,0 +1,19 @@
+# Default values for osiris-flange.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+Instance: global
+
+replicaCount: 1
+
+image:
+  repository: miosiris/flange 
+  tag: latest
+
+config:
+  unis: ["http://172.18.0.25:8888"]
+  port: 9001
+  debug: 0
+  layout: 
+  ryu-controller:
+

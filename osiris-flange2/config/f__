@@ -1,0 +1,5 @@
+[CONFIG]
+unis:["http://um-ps01.osirs.org:9000"]
+port:9001
+debug:0
+layout:

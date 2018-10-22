@@ -1,0 +1,53 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: osiris-flange-{{ .Values.Instance }}-deployment
+  labels:
+    app: {{ template "osiris-flange.name" . }}
+    chart: {{ template "osiris-flange.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osiris-flange.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "osiris-flange.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: zero
+              containerPort: 8000
+              protocol: TCP
+            - name: http
+              containerPort: {{ .Values.config.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: config-vol
+              mountPath: /etc/flanged
+            - name: config-vol-2
+              mountPath: /etc/supervisor/conf.d/flange.conf
+              subPath: flange.conf
+      volumes:
+        - name: config-vol
+          configMap:
+            name: osiris-flange-{{ .Values.Instance }}-configmap
+            items:
+              - key: flanged_conf.ini 
+                path: flanged_conf.ini
+              - key: fladmin_conf.ini
+                path: fladmin_conf.ini
+        - name: config-vol-2
+          configMap:
+            name: osiris-flange-{{ .Values.Instance }}-configmap
+            items:
+              - key: flange.conf
+                path: flange.conf

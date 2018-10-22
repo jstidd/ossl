@@ -1,0 +1,40 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "osiris-dlt-web.fullname" . }}
+  labels:
+    app: {{ template "osiris-dlt-web.name" . }}
+    chart: {{ template "osiris-dlt-web.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osiris-dlt-web.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "osiris-dlt-web.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 42424
+              protocol: TCP
+          volumeMounts:
+            - name: config-vol
+              mountPath: /home/osiris/dlt-web/properties.js
+              subPath: properties.js
+      volumes:
+        - name: config-vol
+          configMap:
+            name: osiris-dltweb-{{ .Values.Instance }}-configmap
+            items:
+              - key: properties.js
+                path: properties.js

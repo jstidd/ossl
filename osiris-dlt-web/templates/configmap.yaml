@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: osiris-dltweb-{{ .Values.Instance }}-configmap
+  labels:
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}
+    app: dltweb
+    tag: {{ .Values.Instance }}
+data:
+  properties.js: |-
+{{ tpl (.Files.Get "config/properties.js") . | indent 4 }}

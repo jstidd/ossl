@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: osiris-topology-{{ .Values.Instance }}-config
+  labels:
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}
+    app: osiris-topology
+    tag: {{ .Values.Instance }}
+data:
+  flanged_conf.ini: |-
+{{ tpl (.Files.Get "config/osiris-sdn-app.conf") . | indent 4 }}

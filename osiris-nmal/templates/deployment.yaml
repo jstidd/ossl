@@ -1,0 +1,94 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "osiris-nmal.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "osiris-nmal.name" . }}
+    helm.sh/chart: {{ include "osiris-nmal.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "osiris-nmal.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "osiris-nmal.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: unis
+          image: miosiris/unis:latest
+          imagePullPolicy: Always
+          ports:
+            - name: port1
+              containerPort: 8888
+              protocol: TCP
+        - name: flange
+          image: miosiris/flange:latest
+          imagePullPolicy: Always
+          ports:
+            - name: port2
+              containerPort: 8000
+              protocol: TCP
+            - name: port3
+              containerPort: 9001
+              protocol: TCP
+          volumeMounts:
+            - name: config-vol
+              mountPath: /etc/flanged
+            - name: config-vol-2
+              mountPath: /etc/supervisor/conf.d/flange.conf
+              subPath: flange.conf
+        - name: dltweb
+          image: miosiris/dltweb:latest
+          imagePullPolicy: Always
+          ports:
+            - name: port4
+              containerPort: 42424
+              protocol: TCP
+          volumeMounts:
+            - name: config-vol-3
+              mountPath: /home/osiris/dlt-web/properties.js
+              subPath: properties.js
+        - name: topology
+          image: miosiris/topology:latest
+          imagePullPolicy: Always
+          ports:
+            - name: port5
+              containerPort: 6633
+              protocol: TCP
+          volumeMounts:
+            - name: config-vol-4
+              mountPath: /etc/ryu/osiris-sdn-app.conf
+              subPath: osiris-sdn-app.conf
+      volumes:
+        - name: config-vol
+          configMap:
+            name: osiris-flange-{{ .Values.Instance }}-configmap
+            items:
+              - key: flanged_conf.ini 
+                path: flanged_conf.ini
+              - key: fladmin_conf.ini
+                path: fladmin_conf.ini
+        - name: config-vol-2
+          configMap:
+            name: osiris-flange-{{ .Values.Instance }}-configmap
+            items:
+              - key: flange.conf
+                path: flange.conf
+        - name: config-vol-3
+          configMap:
+            name: osiris-dltweb-{{ .Values.Instance }}-configmap
+            items:
+              - key: properties.js
+                path: properties.js
+        - name: config-vol-4
+          confiMap:
+            name: osiris-topology-{{ .Values.Instance }}-config
+            items:
+              - key: osiris-sdn-app.conf
+                path: osiris-sdn-app.conf
