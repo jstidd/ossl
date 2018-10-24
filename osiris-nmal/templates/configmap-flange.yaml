@@ -10,7 +10,3 @@ metadata:
 data:
   flanged_conf.ini: |-
 {{ tpl (.Files.Get "config/flanged_conf.ini") . | indent 4 }}
-  fladmin_conf.ini: |-
-{{ tpl (.Files.Get "config/fladmin_conf.ini") . | indent 4 }}
-  flange.conf: |-
-{{ tpl (.Files.Get "config/flange.conf") . | indent 4 }}

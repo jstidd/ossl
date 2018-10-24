@@ -8,7 +8,7 @@ replicaCount: 1
 
 #flange
 config:
-  unis: ["http://0.0.0.0:8888"]
+  unis: "[\"http://0.0.0.0:8888\"]"
   port: 9001
   debug: 0
   layout: 
