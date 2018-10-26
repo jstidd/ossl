@@ -1,0 +1,26 @@
+# Default values for osiris-nmal.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+Instance: production
+
+replicaCount: 1
+
+#flange
+config:
+  unis: "[\"http://0.0.0.0:8888\"]"
+  port: 9001
+  debug: 0
+  layout: 
+  ryu-controller:
+
+#DLT Web
+UNIS:
+  domain: localhost
+  port: 8888
+
+
+#Topology
+unis-domain: "My Domain"
+unis-server: "http://0.0.0.0:8888"
+unis-host: "http://0.0.0.0:8888"

@@ -41,6 +41,9 @@ spec:
             - name: config-vol
               mountPath: /etc/flanged/flanged_conf.ini
               subPath: flanged_conf.ini
+            - name: config-vol-2
+              mountPath: /etc/flanged/fladmin_conf.ini
+              subPath: fladmin_conf.ini
         - name: dltweb
           image: miosiris/dltweb:latest
           imagePullPolicy: Always
@@ -70,6 +73,12 @@ spec:
             items:
               - key: flanged_conf.ini 
                 path: flanged_conf.ini
+        - name: config-vol-2
+          configMap:
+            name: osiris-flange-{{ .Values.Instance }}-configmap
+            items:
+              - key: fladmin_conf.ini 
+                path: fladmin_conf.ini
         - name: config-vol-3
           configMap:
             name: osiris-dltweb-{{ .Values.Instance }}-configmap
